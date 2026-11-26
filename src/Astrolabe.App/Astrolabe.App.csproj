@@ -1,0 +1,85 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>Astrolabe.App</RootNamespace>
+    <AssemblyName>Astrolabe.App</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>0.1.0</Version>
+    <UseWinUI>true</UseWinUI>
+    <WinUISDKReferences>false</WinUISDKReferences>
+    <DisableEmbeddedXbf>true</DisableEmbeddedXbf>
+
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <PackageArchitecture>x64</PackageArchitecture>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant())</RuntimeIdentifier>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+
+    <DefaultLanguage>zh-cn</DefaultLanguage>
+    <DefaultResourceLanguage>zh-CN</DefaultResourceLanguage>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Astrolabe.Core\Astrolabe.Core.csproj" />
+    <ProjectReference Include="..\Astrolabe.WinRTExtension\Astrolabe.WinRTExtension.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
+
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="ShuRuk.Runtime" GeneratePathProperty="true" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" GeneratePathProperty="true" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" GeneratePathProperty="true" />
+    <PackageReference Include="CommunityToolkit.WinUI.Helpers" GeneratePathProperty="true" />
+    <PackageReference Include="CommunityToolkit.WinUI.Triggers" GeneratePathProperty="true" />
+    <PackageReference Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" GeneratePathProperty="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PkgShuRuk_Runtime)' != ''">
+    <Content Include="$(PkgShuRuk_Runtime)\lib\net10.0-windows10.0.26100.0\ShuRuk.Runtime\Strings\**\*.resw"
+             CopyToOutputDirectory="PreserveNewest"
+             Link="ShuRuk.Runtime\Strings\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <Target Name="CopyWinRTExtensionFiles" AfterTargets="Build">
+    <PropertyGroup>
+      <WinRTExtOutputPath>$(MSBuildThisFileDirectory)..\Astrolabe.WinRTExtension\bin\$(Configuration)\net10.0-windows10.0.26100\$(RuntimeIdentifier)\</WinRTExtOutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <_WinRTExtFiles Include="$(WinRTExtOutputPath)Astrolabe.WinRTExtension.comhost.dll" />
+      <_WinRTExtFiles Include="$(WinRTExtOutputPath)Astrolabe.WinRTExtension.dll" />
+      <_WinRTExtFiles Include="$(WinRTExtOutputPath)Astrolabe.WinRTExtension.clsidmap" />
+      <_WinRTExtFiles Include="$(WinRTExtOutputPath)Astrolabe.WinRTExtension.runtimeconfig.json" />
+      <_WinRTExtFiles Include="$(WinRTExtOutputPath)Astrolabe.WinRTExtension.deps.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_WinRTExtFiles)"
+          DestinationFolder="$(OutDir)"
+          Condition="Exists('%(Identity)')" />
+    <Copy SourceFiles="@(_WinRTExtFiles)"
+          DestinationFolder="$(PublishDir)"
+          Condition="Exists('%(Identity)') and '$(PublishDir)' != ''" />
+  </Target>
+
+  <Target Name="SyncManifestVersions" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <_ManifestVersion>$(Version).0</_ManifestVersion>
+    </PropertyGroup>
+    <XmlPeek XmlInputPath="app.manifest" Query="/asm1:assembly/asm1:assemblyIdentity/@version" Result="_AppManifestVer" Namespaces="&lt;Namespace Prefix='asm1' Uri='urn:schemas-microsoft-com:asm.v1' /&gt;" />
+    <XmlPeek XmlInputPath="Package.appxmanifest" Query="/f:Package/f:Identity/@Version" Result="_AppxManifestVer" Namespaces="&lt;Namespace Prefix='f' Uri='http://schemas.microsoft.com/appx/manifest/foundation/windows10' /&gt;" />
+    <XmlPoke Condition="'@(_AppManifestVer)' != '$(_ManifestVersion)'" XmlInputPath="app.manifest" Query="/asm1:assembly/asm1:assemblyIdentity/@version" Value="$(_ManifestVersion)" Namespaces="&lt;Namespace Prefix='asm1' Uri='urn:schemas-microsoft-com:asm.v1' /&gt;" />
+    <XmlPoke Condition="'@(_AppxManifestVer)' != '$(_ManifestVersion)'" XmlInputPath="Package.appxmanifest" Query="/f:Package/f:Identity/@Version" Value="$(_ManifestVersion)" Namespaces="&lt;Namespace Prefix='f' Uri='http://schemas.microsoft.com/appx/manifest/foundation/windows10' /&gt;" />
+  </Target>
+
+</Project>

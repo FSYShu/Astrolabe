@@ -1,0 +1,49 @@
+# IDE / 集成开发环境
+.arts/
+.codeartsdoer/
+.vs/
+*.csproj.user
+*.suo
+
+# Reference / 参考文档
+references/
+
+# Build / 构建输出
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+dist/
+
+# NuGet / 包管理
+.nuget/
+packages/
+
+# MSIX / 打包
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+BundleArtifacts/
+AppPackages/
+
+# WinApp CLI / WinApp工具链
+.winapp/
+
+# Security / 安全扫描
+.security/
+
+# Environment / 环境
+global.json
+
+# Temp / 临时文件
+.temp/
+
+# Build logs / 构建日志
+build_log*.txt
+*_err.log
+err.log
+
+# Signing certificates / 签名证书
+*.pfx
+*.cer
+devcert.pfx
