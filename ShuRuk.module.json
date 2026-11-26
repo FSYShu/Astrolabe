@@ -1,0 +1,19 @@
+{
+  "moduleId": "astrolabe",
+  "name": "Astrolabe",
+  "author": "astrolabe",
+  "description": "File manager toolkit module / 文件管理工具集模块",
+  "icon": "src/Astrolabe.App/Assets/icon.png",
+  "subModules": [
+    {
+      "moduleId": "astrolabe.folderpalette",
+      "name": "FolderPalette",
+      "description": "Folder icon custom / 文件夹图标自定义",
+      "icon": "src/Astrolabe.FolderPalette/Assets/FolderIcons/orange.ico",
+      "light": true,
+      "portable": true
+    }
+  ],
+  "light": false,
+  "portable": false
+}
